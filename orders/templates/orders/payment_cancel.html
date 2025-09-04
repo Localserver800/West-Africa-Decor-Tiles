@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+</style>
+<div class="container mt-5">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Payment Canceled</h4>
+        <p>Your payment has been canceled. You can try again from the checkout page.</p>
+        <hr>
+        <p class="mb-0">If you have any questions, please <a href="#">contact us</a>.</p>
+    </div>
+</div>
+{% endblock %}

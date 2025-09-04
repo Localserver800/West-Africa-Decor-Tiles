@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Left Sidebar -->
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Shop by Room</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for category in categories %}
+                        <div class="col-6 mb-3">
+                            <a href="?category={{ category.slug }}" class="text-decoration-none text-dark">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <img src="https://via.placeholder.com/50x50.png?text={{ category.name|slice:":1" }}" alt="{{ category.name }}" class="mb-2">
+                                        <h6>{{ category.name }}</h6>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{% url 'product_catalog' %}">
+                        <input type="hidden" name="category" value="{{ request.GET.category }}">
+                        <div class="mb-3">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="min_price" class="form-label">Min Price</label>
+                            <input type="number" class="form-control" id="min_price" name="min_price" value="{{ min_price|default_if_none:'' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="max_price" class="form-label">Max Price</label>
+                            <input type="number" class="form-control" id="max_price" name="max_price" value="{{ max_price|default_if_none:'' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="brand" class="form-label">Brand</label>
+                            <select class="form-select" id="brand" name="brand">
+                                <option value="">All Brands</option>
+                                {% for brand_name in brands %}
+                                    <option value="{{ brand_name }}" {% if selected_brand == brand_name %}selected{% endif %}>{{ brand_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="material" class="form-label">Material</label>
+                            <select class="form-select" id="material" name="material">
+                                <option value="">All Materials</option>
+                                {% for material_name in materials %}
+                                    <option value="{{ material_name }}" {% if selected_material == material_name %}selected{% endif %}>{{ material_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sort_by" class="form-label">Sort By</label>
+                            <select class="form-select" id="sort_by" name="sort_by">
+                                <option value="" {% if not request.GET.sort_by %}selected{% endif %}>Newest</option>
+                                <option value="price_asc" {% if request.GET.sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                                <option value="price_desc" {% if request.GET.sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content - Product Grid -->
+        <div class="col-md-9">
+            <h2 class="mb-4">All Tiles <small class="text-muted">({{ products.paginator.count }} products)</small></h2>
+            <div class="row">
+                {% for product in products %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100">
+                        {% if product.current_stock < 10 %}
+                        <span class="badge bg-warning position-absolute" style="top: 0.5rem; right: 0.5rem">Low Stock</span>
+                        {% endif %}
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x200.png?text={{ product.name }}" class="card-img-top" alt="{{ product.name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text fw-bold">GHS {{ product.price }}</p>
+                            <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary">View Product</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                        <h4>No products found</h4>
+                        <p class="text-muted">Try adjusting your filters or check back later.</p>
+                        <a href="{% url 'product_catalog' %}" class="btn btn-primary">Clear Filters</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+            <nav aria-label="Product pagination">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ products.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    {% for i in products.paginator.page_range %}
+                        {% if products.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if products.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ products.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

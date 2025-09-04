@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+</style>
+<div class="container mt-4">
+    <h1>Order Confirmation</h1>
+    <p>Your order {{ order.id }} has been placed successfully!</p>
+    <p>Total amount: GHS {{ order.total_amount }}</p>
+    <a href="{% url 'product_catalog' %}" class="btn btn-primary">Continue Shopping</a>
+</div>
+{% endblock %}

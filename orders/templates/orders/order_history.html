@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) > * {
+        background-color: var(--light-gray);
+    }
+</style>
+<div class="container mt-5">
+    <h2 class="mb-4">Order History</h2>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.created|date:"Y-m-d" }}</td>
+                            <td>GHS {{ order.total_amount }}</td>
+                            <td>{{ order.status }}</td>
+                            <td><a href="{% url 'order_detail' order.id %}" class="btn btn-primary btn-sm">View Details</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">You have no orders yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

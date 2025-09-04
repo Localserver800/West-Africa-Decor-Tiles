@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Checkout</h1>
+
+    <div class="row">
+        <!-- Checkout Form -->
+        <div class="col-lg-7">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Shipping Information</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Delivery Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone_number|default:'' }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Payment Method</label>
+                            <select class="form-select" id="payment_method" name="payment_method">
+                                <option value="cash">Cash on Delivery</option>
+                                <option value="mobile_money">Mobile Money</option>
+                                <option value="stripe">Card (Stripe)</option>
+                            </select>
+                        </div>
+                        <hr class="my-4">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Order Summary</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for item in cart %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="my-0">{{ item.product.name }}</h6>
+                                <small class="text-muted">Quantity: {{ item.quantity }}</small>
+                            </div>
+                            <span class="text-muted">GHS {{ item.total_price }}</span>
+                        </li>
+                        {% endfor %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                            <span class="fw-bold">Total</span>
+                            <strong class="fw-bold">GHS {{ cart.get_total_price }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

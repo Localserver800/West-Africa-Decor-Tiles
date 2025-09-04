@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <section class="bg-dark text-white text-center p-5">
+        <div class="container">
+            <h1 class="display-4">UP TO 30% OFF ALL PREMIUM TILES</h1>
+            <p class="lead">CATALYM INSANITY</p>
+            <div>
+                <span class="badge bg-danger">FREE DELIVERY</span>
+                <span class="badge bg-success">INSTALLATION SERVICE</span>
+            </div>
+            <a href="{% url 'product_catalog' %}" class="btn btn-primary btn-lg mt-3">SHOP NOW &rarr;</a>
+        </div>
+    </section>
+
+    <!-- Flash Sales Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Flash Sales</h2>
+            <div class="row">
+                {% for flash_sale in flash_sales %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="position-relative">
+                            {% if flash_sale.product.image %}
+                            <img src="{{ flash_sale.product.image.url }}" class="card-img-top" alt="{{ flash_sale.product.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                            <img src="https://via.placeholder.com/300x200.png?text={{ flash_sale.product.name }}" class="card-img-top" alt="{{ flash_sale.product.name }}" style="height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <a href="{% url 'wishlist_add_remove' flash_sale.product.id %}" class="btn btn-light btn-sm position-absolute top-0 end-0 m-2">
+                                <i class="far fa-heart"></i>
+                            </a>
+                            <span class="badge bg-danger position-absolute" style="top: 0.5rem; right: 0.5rem">-{{ flash_sale.discount_percentage }}%</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ flash_sale.product.name }}</h5>
+                            <p class="card-text">
+                                <span class="text-danger fw-bold">GHS {{ flash_sale.product.get_discounted_price }}</span>
+                                <s class="text-muted">GHS {{ flash_sale.product.price }}</s>
+                            </p>
+                            <p class="card-text mt-auto">
+                                <small class="text-muted">Only {{ flash_sale.product.current_stock }} items left</small>
+                            </p>
+                            <div class="d-grid mt-2">
+                                <form action="{% url 'cart_add' flash_sale.product.id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="quantity" value="1">
+                                    <input type="hidden" name="override" value="false">
+                                    <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <small class="text-muted">Ends in: <span class="countdown" data-end-date="{{ flash_sale.end_date|date:'c' }}"></span></small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Selling Tiles Section -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Top Selling Tiles</h2>
+            <div class="row">
+                {% for product in top_selling_products %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="position-relative">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                            <img src="https://via.placeholder.com/300x200.png?text={{ product.name }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <a href="{% url 'wishlist_add_remove' product.id %}" class="btn btn-light btn-sm position-absolute top-0 end-0 m-2">
+                                <i class="far fa-heart"></i>
+                            </a>
+                            {% if product.current_stock < 10 %}
+                            <span class="badge bg-warning position-absolute" style="top: 0.5rem; right: 0.5rem">Low Stock</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text fw-bold">GHS {{ product.price }}</p>
+                            <p class="card-text mt-auto">
+                                {# Add any additional info here if needed #}
+                            </p>
+                            <div class="d-grid mt-2">
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary">View Product</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const countdownElements = document.querySelectorAll('.countdown');
+        countdownElements.forEach(function(element) {
+            const endDate = new Date(element.dataset.endDate).getTime();
+
+            const interval = setInterval(function() {
+                const now = new Date().getTime();
+                const distance = endDate - now;
+
+                if (distance < 0) {
+                    clearInterval(interval);
+                    element.innerHTML = "EXPIRED";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                element.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+            }, 1000);
+        });
+    });
+</script>
+{% endblock %}

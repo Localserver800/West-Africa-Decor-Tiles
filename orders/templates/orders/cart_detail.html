@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Your Shopping Cart</h1>
+
+    {% if cart %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.product.image %}
+                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded" style="width: 75px;">
+                                            {% endif %}
+                                            <span class="ms-3">{{ item.product.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>GHS {{ item.price }}</td>
+                                    <td>
+                                        <form action="{% url 'cart_add' item.product.id %}" method="post" class="d-flex">
+                                            {% csrf_token %}
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" class="form-control form-control-sm" style="width: 60px;">
+                                            <input type="hidden" name="override" value="True">
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">Update</button>
+                                        </form>
+                                    </td>
+                                    <td>GHS {{ item.total_price }}</td>
+                                    <td>
+                                        <form action="{% url 'cart_remove' item.product.id %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash-alt"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Cart Summary</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Subtotal
+                            <span>GHS {{ cart.get_total_price }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Shipping
+                            <span>Free</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
+                            Total
+                            <span>GHS {{ cart.get_total_price }}</span>
+                        </li>
+                    </ul>
+                    <div class="d-grid gap-2 mt-3">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+                        {% else %}
+                            <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn btn-primary">Login to Checkout</a>
+                        {% endif %}
+                        <a href="{% url 'product_catalog' %}" class="btn btn-outline-secondary">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+            {% if not user.is_authenticated %}
+            <div class="alert alert-info mt-3">
+                <p class="mb-0">New customer? <a href="{% url 'register' %}">Create an account</a> to save your cart and for faster checkout.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center p-5 border rounded">
+        <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+        <h2>Your cart is empty</h2>
+        <p class="lead text-muted">Looks like you haven't added anything to your cart yet.</p>
+        <a href="{% url 'product_catalog' %}" class="btn btn-primary mt-3">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

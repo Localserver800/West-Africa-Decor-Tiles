@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+</style>
+<div class="container mt-5">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Payment Successful!</h4>
+        <p>Your payment has been processed successfully. Thank you for your order.</p>
+        <hr>
+        <p class="mb-0">You can view your order details in your <a href="{% url 'order_history' %}">order history</a>.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Low Stock Alert System</h2>
+    
+    {% if low_stock_products %}
+    <div class="alert alert-warning">
+        <h5>⚠️ Low Stock Products Found: {{ low_stock_products|length }}</h5>
+    </div>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Current Stock</th>
+                <th>SKU</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in low_stock_products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td class="text-danger"><strong>{{ product.current_stock }}</strong></td>
+                <td>{{ product.sku }}</td>
+                <td><span class="badge bg-danger">Low Stock</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">Send Email Alerts to Managers</button>
+    </form>
+    
+    {% else %}
+    <div class="alert alert-success">
+        <h5>✅ All products have sufficient stock!</h5>
+        <p>No low stock items found.</p>
+    </div>
+    {% endif %}
+    
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}
