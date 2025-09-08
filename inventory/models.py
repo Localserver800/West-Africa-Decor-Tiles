@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
+import africastalking
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -41,21 +43,25 @@ class Product(models.Model):
         if self.pk:
             original = Product.objects.get(pk=self.pk)
             if self.current_stock < 10 and original.current_stock >= 10:
-                from communications.utils import simulate_email
                 from users.models import CustomUser
-                
+
+                # Initialize Africa's Talking
+                username = settings.AFRICASTALKING_USERNAME
+                api_key = settings.AFRICASTALKING_API_KEY
+                africastalking.initialize(username, api_key)
+                sms = africastalking.SMS
+
+                # Get admin phone numbers
                 admins = CustomUser.objects.filter(role='admin', is_active=True)
-                for admin in admins:
-                    if admin.email:
-                        subject = f"LOW STOCK ALERT: {self.name}"
-                        message = f"""
-                        Product: {self.name}
-                        Current Stock: {self.current_stock}
-                        SKU: {self.sku}
-                        
-                        Please restock immediately.
-                        """
-                        simulate_email(admin.email, subject, message)
+                recipients = [admin.phone_number for admin in admins if admin.phone_number]
+
+                if recipients:
+                    message = f"LOW STOCK ALERT: {self.name} (SKU: {self.sku}) has only {self.current_stock} items left. Please restock immediately."
+                    try:
+                        response = sms.send(message, recipients)
+                        print(response)
+                    except Exception as e:
+                        print(f"Error sending SMS: {e}")
         
         super().save(*args, **kwargs)
 

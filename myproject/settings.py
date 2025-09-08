@@ -185,3 +185,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'notesound201@gmail.com'  # Replace with your email
 EMAIL_HOST_PASSWORD = 'this_just_the_beginning@098'  # Replace with your app password
 DEFAULT_FROM_EMAIL = 'notesound201@gmail.com'
+
+# Africa's Talking API credentials
+AFRICASTALKING_USERNAME = 'your_username'
+AFRICASTALKING_API_KEY = 'your_api_key'
