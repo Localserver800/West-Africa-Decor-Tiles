@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8szzyqbs=ilg@3nbf%7gw@$dv@i2g34xmse1rnldzl30oj(ww4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['westafricadecortiles.pythonanywhere.com', 'www.westafricadecortiles.pythonanywhere.com']
+ALLOWED_HOSTS = ['westafricadecortiles.pythonanywhere.com', 'www.westafricadecortiles.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -183,9 +184,14 @@ EMAIL_HOST = 'smtp.gmail.com'  # Example for Gmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'notesound201@gmail.com'  # Replace with your email
-EMAIL_HOST_PASSWORD = 'this_just_the_beginning@098'  # Replace with your app password
+EMAIL_HOST_PASSWORD = 'whnp lveu jvve jvve'
 DEFAULT_FROM_EMAIL = 'notesound201@gmail.com'
 
 # Africa's Talking API credentials
 AFRICASTALKING_USERNAME = 'your_username'
 AFRICASTALKING_API_KEY = 'your_api_key'
+
+# Twilio API credentials
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
+TWILIO_WHATSAPP_NUMBER = os.environ.get('TWILIO_WHATSAPP_NUMBER')

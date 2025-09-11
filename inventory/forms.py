@@ -1,5 +1,10 @@
 from django import forms
-from .models import Review
+from .models import Product, Review
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['category', 'name', 'description', 'price', 'current_stock', 'sku', 'image', 'brand', 'material']
 
 class ReviewForm(forms.ModelForm):
     class Meta:

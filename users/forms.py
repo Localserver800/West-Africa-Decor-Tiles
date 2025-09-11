@@ -28,3 +28,6 @@ class AddressForm(forms.ModelForm):
             'country': forms.TextInput(attrs={'class': 'form-control'}),
             'is_default': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+class VerificationCodeForm(forms.Form):
+    code = forms.CharField(max_length=6, required=True, label="Verification Code")

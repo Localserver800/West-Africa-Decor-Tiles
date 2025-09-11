@@ -24,6 +24,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/', blank=True, null=True)
     brand = models.CharField(max_length=100, blank=True, null=True)
     material = models.CharField(max_length=100, blank=True, null=True)
+    is_premium = models.BooleanField(default=False, help_text="Mark as premium tile")
 
     def __str__(self):
         return self.name

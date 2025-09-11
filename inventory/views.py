@@ -1,9 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Category
 from orders.forms import CartAddProductForm
 from django.contrib.auth.decorators import login_required
 from communications.utils import simulate_email
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from .forms import ProductForm, ReviewForm
+from .models import Product, ProductImage, Review
+
 
 def product_list(request):
     """View to display all products with optional search and pagination"""
@@ -55,8 +58,6 @@ def product_list(request):
     return render(request, 'inventory/product_catalog.html', context)
 
 # ADD THIS NEW VIEW
-from .forms import ReviewForm
-from .models import Product, ProductImage, Review
 
 def product_detail(request, product_id):
     """View to display detailed information about a single product"""
@@ -187,3 +188,47 @@ def product_catalog(request):
         'selected_material': material_query,
     }
     return render(request, 'inventory/product_catalog.html', context)
+
+@login_required
+def product_management_list(request):
+    if not request.user.is_staff:
+        return redirect('/')
+    products = Product.objects.all()
+    return render(request, 'inventory/product_management_list.html', {'products': products})
+
+@login_required
+def product_create(request):
+    if not request.user.is_staff:
+        return redirect('/')
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('product_management_list')
+    else:
+        form = ProductForm()
+    return render(request, 'inventory/product_form.html', {'form': form})
+
+@login_required
+def product_update(request, pk):
+    if not request.user.is_staff:
+        return redirect('/')
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('product_management_list')
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'inventory/product_form.html', {'form': form})
+
+@login_required
+def product_delete(request, pk):
+    if not request.user.is_staff:
+        return redirect('/')
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('product_management_list')
+    return render(request, 'inventory/product_confirm_delete.html', {'product': product})

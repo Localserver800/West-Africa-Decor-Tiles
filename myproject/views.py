@@ -17,10 +17,18 @@ def home(request):
         total_quantity_sold=Sum('orderitem__quantity')
     ).order_by('-total_quantity_sold').filter(total_quantity_sold__gt=0)[:4]
 
+    # Premium products
+    premium_products = Product.objects.filter(is_premium=True)[:4]
+
+    # Carousel products - latest 3 products with images
+    carousel_products = Product.objects.filter(image__isnull=False).order_by('-id')[:3]
+
     context = {
         'flash_sales': flash_sales,
         'flash_sale_products': flash_sale_products,
         'top_selling_products': top_selling_products,
+        'premium_products': premium_products,
+        'carousel_products': carousel_products,
     }
     return render(request, 'home.html', context)
 

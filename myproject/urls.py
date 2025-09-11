@@ -6,7 +6,7 @@ from myproject.views import home, admin_dashboard
 from users.views import register
 
 urlpatterns = [
-    path('admin/dashboard/', admin_dashboard, name='admin_dashboard'),
+    
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('orders/', include('orders.urls')),
@@ -16,4 +16,5 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

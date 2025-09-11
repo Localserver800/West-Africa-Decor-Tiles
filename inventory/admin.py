@@ -7,8 +7,9 @@ class ProductImageInline(admin.TabularInline):
     fields = ['image', 'alt_text', 'is_primary']
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'sku', 'price', 'current_stock']
-    list_filter = ['name']
+    list_display = ['name', 'sku', 'price', 'current_stock', 'is_premium']
+    list_filter = ['is_premium', 'name']
+    list_editable = ['price', 'current_stock', 'is_premium']
     search_fields = ['name', 'sku']
     inlines = [ProductImageInline]
 
